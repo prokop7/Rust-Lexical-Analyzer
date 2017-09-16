@@ -1,4 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using RustLexicalAnalyzer.Analyzer;
+using static RustLexicalAnalyzer.Analyzer.Token.Types;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +12,23 @@ namespace RustLexicalAnalyzer
     {
         static void Main(string[] args)
         {
+            Case2("hello.rs");
             Case("fn main() {}");
+        }
+          
+		static void Case2(string fileName)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            var t1 = new Token((1, 2), ANDAND, string.Empty);
+            var t2 = new Token((1, 2), IDENT, "main");
+            var hello = File.Open(fileName, FileMode.Open);
+            LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(hello);
+            for (int i = 0; i < 100; i++)
+            {
+                foreach (var token in lexicalAnalyzer.GetNextTokens())
+                {
+                    Console.WriteLine(token);
+                }
         }
 
         static void Case(string code)
