@@ -1,15 +1,43 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
-namespace RustLexicalAnalyzer
+namespace RustLexicalAnalyzer.Analyzer
 {
+	public static class EnumExtensions
+	{
+		public static string GetDisplayName(this Enum enumValue)
+		{
+			return enumValue.GetType()
+				.GetMember(enumValue.ToString())
+				.First()
+				.GetCustomAttribute<DisplayNameAttribute>()
+				.DisplayName;
+		}
+	}
+	
 	public class Token
 	{
 		public RefToSource ReferRefToSource { get; }
 		public string StringToken { get; }
 
+		public static Types GetType(string s)
+		{
+			foreach (Types type in Enum.GetValues(typeof(Types)))
+			{
+				if (s.Equals(type.GetDisplayName()) && !s.Equals(""))
+					return type;
+			}
+			return Types.NONE;
+		}
+		
 		public enum Types
 		{
 			[DisplayName("")] IDENT,
+			[DisplayName("")] NONE,
+			[DisplayName("")] LITERAL,
 
 			// Keywords
 			[DisplayName("_")] _,
@@ -102,9 +130,9 @@ namespace RustLexicalAnalyzer
 			[DisplayName(">")] GREATER,
 
 			[DisplayName(" ")] SPACE,
-			[DisplayName("\\n")] NEW_LINE,
-			[DisplayName("\\r")] CARRET_RETURN,
-			[DisplayName("\\t")] TAB,
+			[DisplayName("\n")] NEW_LINE,
+			[DisplayName("\r")] CARRET_RETURN,
+			[DisplayName("\t")] TAB,
 
 			[DisplayName("<-")] LEFT_ARROW,
 			[DisplayName("->")] RIGHT_ARROW,
@@ -130,8 +158,8 @@ namespace RustLexicalAnalyzer
 
 		public struct RefToSource
 		{
-			public int LineNumb;
-			public int PosNumb;
+			public readonly int LineNumb;
+			public readonly int PosNumb;
 
 			public static implicit operator (int, int)(RefToSource RefToSource) 
 				=> (RefToSource.LineNumb, RefToSource.PosNumb);
@@ -146,7 +174,7 @@ namespace RustLexicalAnalyzer
 			}
 		}
 
-		public virtual Types Type { get; }
+		public Types Type { get; }
 
 		public Token(RefToSource referRefToSource, Types type, string stringToken = "")
 		{
@@ -158,7 +186,7 @@ namespace RustLexicalAnalyzer
 
 		public override string ToString()
 		{
-			return StringToken;
+			return $"Type: {Type}, Line: {ReferRefToSource.LineNumb}, Pos: {ReferRefToSource.PosNumb}";
 		}
 	}
 }
