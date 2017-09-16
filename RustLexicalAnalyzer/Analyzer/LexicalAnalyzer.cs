@@ -27,9 +27,10 @@ namespace RustLexicalAnalyzer.Analyzer
                 arr[i] = buffer[i];
             amount -= buffer.Count;
             buffer.Clear();
-            
+            if (amount == 0)
+                return arr;
             if (streamReader.EndOfStream)
-                throw new EndOfStreamException("The strean is ended");
+                return new char[0];
             if (amount > 0)
                 streamReader.Read(arr, 0, amount);
             return arr;
@@ -37,7 +38,7 @@ namespace RustLexicalAnalyzer.Analyzer
 
         public Token[] GetNextTokens(int amount = 1)
         {
-            if (streamReader.EndOfStream)
+            if (streamReader.EndOfStream && buffer.Count == 0)
                 return new Token[0];
             var startOffset = offset;
             var startLine = line;
@@ -53,7 +54,10 @@ namespace RustLexicalAnalyzer.Analyzer
 
             while (true)
             {
-                var c = GetNext()[0];
+                var charArr = GetNext();
+                if (charArr.Length == 0)
+                    break;
+                var c = charArr[0];
                 offset++;
                 sBuffer += c;
                 if (Regex.IsMatch(sBuffer, "^([^A-Za-z])") && Regex.IsMatch(sBuffer, "^([^_])"))
