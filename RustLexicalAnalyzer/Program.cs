@@ -1,202 +1,197 @@
 ﻿using System;
-<<<<<<< HEAD
-<<<<<<< HEAD
 using System.IO;
 using System.Text;
 using RustLexicalAnalyzer.Analyzer;
-using static RustLexicalAnalyzer.Analyzer.Token.Types;
-=======
 using System.Collections.Generic;
 using System.Linq;
->>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
-=======
-using System.Collections.Generic;
-using System.Linq;
->>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
 
 namespace RustLexicalAnalyzer
 {
-    class Program
-    {
-        private static void Main(string[] args)
-        {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Console.OutputEncoding = Encoding.UTF8;
-            var t1 = new Token((1, 2), ANDAND, string.Empty);
-            var t2 = new Token((1, 2), IDENT, "main");
-            var hello = File.Open("hello.rs", FileMode.Open);
-            LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(hello);
-//			Console.WriteLine(lexicalAnalyzer.GetNext(20));
-            for (int i = 0; i < 100; i++)
-            {
-                foreach (var token in lexicalAnalyzer.GetNextTokens())
-                {
-                    Console.WriteLine(token);
-                }
-=======
-=======
->>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
-            Case("fn main() {}");
-        }
+	class Program
+	{
+		private static void Main(string[] args)
+		{
+			Console.OutputEncoding = Encoding.UTF8;
+			Case2("hello.rs");
+			Case("fn main() {}");
+		}
 
-        static void Case(string code)
-        {
-            Console.WriteLine($"Code: `{code}`");
-            var stream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(code));
-            new Scanner(stream).Scan();
-            Console.WriteLine();
-            Console.WriteLine();
-        }
-    }
+		static void Case2(string fileName)
+		{
+			var hello = File.Open(fileName, FileMode.Open);
+			LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(hello);
+			for (int i = 0; i < 100; i++)
+			{
+				foreach (var token in lexicalAnalyzer.GetNextTokens())
+				{
+					Console.WriteLine(token);
+				}
+			}
+		}
 
-    class Reader
-    {
-        private System.IO.Stream _stream;
+		static void Case(string code)
+		{
+			Console.WriteLine($"Code: `{code}`");
+			var stream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(code));
+			new Scanner(stream).Scan();
+			Console.WriteLine();
+			Console.WriteLine();
+		}
+	}
 
-        public Reader(System.IO.Stream stream)
-        {
-            _stream = stream;
-        }
+	class Reader
+	{
+		private System.IO.Stream _stream;
 
-        public string Read(ICollection<string> allowed)
-        {
-            var source = new String(new System.IO.BinaryReader(_stream).ReadChars(Math.Min(allowed.Max(x => x.Length), (int)Left)));
-            var matching = allowed.Where(x => source.StartsWith(x)).ToArray();
-            if (matching.Length > 1)
-            {
-                throw new InvalidOperationException("multi match");
-            }
-            var result = matching.FirstOrDefault();
-            Backtrack(source.Length - (result != null ? result.Length : 0));
-            return result;
-        }
+		public Reader(System.IO.Stream stream)
+		{
+			_stream = stream;
+		}
 
-        public string[] ReadRepeat(ICollection<string> allowed)
-        {
-            return Enumerable.Range(0, int.MaxValue)
-                .Select(x => Read(allowed))
-                .TakeWhile(x => x != null)
-                .ToArray();
-        }
+		public string Read(ICollection<string> allowed)
+		{
+			var source =
+				new String(new System.IO.BinaryReader(_stream).ReadChars(Math.Min(allowed.Max(x => x.Length), (int) Left)));
+			var matching = allowed.Where(x => source.StartsWith(x)).ToArray();
+			if (matching.Length > 1)
+			{
+				throw new InvalidOperationException("multi match");
+			}
+			var result = matching.FirstOrDefault();
+			Backtrack(source.Length - (result != null ? result.Length : 0));
+			return result;
+		}
 
-        public string ReadIdent()
-        {
-            var reader = new System.IO.BinaryReader(_stream);
-            var _0 = reader.PeekChar();
-            if (_0 == -1 || !((char)_0).XID_Start())
-            {
-                return null;
-            }
-            var first = reader.ReadChar();
-            var next = "";
-            while (Left > 0) {
-                if (!((char)reader.PeekChar()).XID_Continue()) {
-                    break;
-                }
-                next += reader.ReadChar();
-            }
-            return first + next;
-        }
+		public string[] ReadRepeat(ICollection<string> allowed)
+		{
+			return Enumerable.Range(0, int.MaxValue)
+				.Select(x => Read(allowed))
+				.TakeWhile(x => x != null)
+				.ToArray();
+		}
 
-        public long Left { get { return _stream.Length - _stream.Position; } }
+		public string ReadIdent()
+		{
+			var reader = new System.IO.BinaryReader(_stream);
+			var _0 = reader.PeekChar();
+			if (_0 == -1 || !((char) _0).XID_Start())
+			{
+				return null;
+			}
+			var first = reader.ReadChar();
+			var next = "";
+			while (Left > 0)
+			{
+				if (!((char) reader.PeekChar()).XID_Continue())
+				{
+					break;
+				}
+				next += reader.ReadChar();
+			}
+			return first + next;
+		}
 
-        private void Backtrack(int length) {
-            _stream.Seek(-length, System.IO.SeekOrigin.Current);
-        }
-    }
+		public long Left
+		{
+			get { return _stream.Length - _stream.Position; }
+		}
 
-    static class Ext
-    {
-        public static bool XID_Start(this char x)
-        {
-            return "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(x);
-        }
+		private void Backtrack(int length)
+		{
+			_stream.Seek(-length, System.IO.SeekOrigin.Current);
+		}
+	}
 
-        public static bool XID_Continue(this char x)
-        {
-            return x.XID_Start() || "0123456789".Contains(x);
-        }
-    }
+	static class Ext
+	{
+		public static bool XID_Start(this char x)
+		{
+			return "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(x);
+		}
 
-    class Scanner
-    {
-        public static readonly string[] Keywords = {
-            "_",        "abstract", "alignof",  "as",       "become",
-            "box",      "break",    "const",    "continue", "crate",
-            "do",       "else",     "enum",     "extern",   "false",
-            "final",    "fn",       "for",      "if",       "impl",
-            "in",       "let",      "loop",     "macro",    "match",
-            "mod",      "move",     "mut",      "offsetof", "override",
-            "priv",     "proc",     "pub",      "pure",     "ref",
-            "return",   "Self",     "self",     "sizeof",   "static",
-            "struct",   "super",    "trait",    "true",     "type",
-            "typeof",   "unsafe",   "unsized",  "use",      "virtual",
-            "where",    "while",    "yield",
-        };
+		public static bool XID_Continue(this char x)
+		{
+			return x.XID_Start() || "0123456789".Contains(x);
+		}
+	}
 
-        public static readonly string[] Whitespace = {
-            "\x20", "\t", "\r", "\n",
-        };
+	class Scanner
+	{
+		public static readonly string[] Keywords =
+		{
+			"_", "abstract", "alignof", "as", "become",
+			"box", "break", "const", "continue", "crate",
+			"do", "else", "enum", "extern", "false",
+			"final", "fn", "for", "if", "impl",
+			"in", "let", "loop", "macro", "match",
+			"mod", "move", "mut", "offsetof", "override",
+			"priv", "proc", "pub", "pure", "ref",
+			"return", "Self", "self", "sizeof", "static",
+			"struct", "super", "trait", "true", "type",
+			"typeof", "unsafe", "unsized", "use", "virtual",
+			"where", "while", "yield",
+		};
 
-        public static readonly string[] Symbol = {
-            "::", "->", "#", "[", "]", "(", ")", "{", "}", ",", ";",
-        };
+		public static readonly string[] Whitespace =
+		{
+			"\x20", "\t", "\r", "\n",
+		};
 
-        public Scanner(System.IO.Stream stream)
-        {
-            _reader = new Reader(stream);
-        }
+		public static readonly string[] Symbol =
+		{
+			"::", "->", "#", "[", "]", "(", ")", "{", "}", ",", ";",
+		};
 
-        public void Scan()
-        {
-            var _left = -1L;
-            while (_reader.Left > 0)
-            {
-                if (_left == _reader.Left)
-                {
-                    throw new InvalidOperationException("infinite loop");
-                }
-                _left = _reader.Left;
-                Pass();
-            }
-        }
+		public Scanner(System.IO.Stream stream)
+		{
+			_reader = new Reader(stream);
+		}
 
-        private Reader _reader;
+		public void Scan()
+		{
+			var _left = -1L;
+			while (_reader.Left > 0)
+			{
+				if (_left == _reader.Left)
+				{
+					throw new InvalidOperationException("infinite loop");
+				}
+				_left = _reader.Left;
+				Pass();
+			}
+		}
 
-        private void Pass()
-        {
-            var _0 = _reader.Read(Keywords);
-            if (_0 != null)
-            {
-                Console.WriteLine($"keyword({_0}) ");
-                return;
-            }
+		private Reader _reader;
 
-            var _1 = _reader.Read(Symbol);
-            if (_1 != null)
-            {
-                Console.WriteLine($"symbol({_1}) ");
-                return;
-            }
+		private void Pass()
+		{
+			var _0 = _reader.Read(Keywords);
+			if (_0 != null)
+			{
+				Console.WriteLine($"keyword({_0}) ");
+				return;
+			}
 
-            var _2 = _reader.ReadRepeat(Whitespace);
-            if (_2.Length != 0)
-            {
-                Console.WriteLine($"whitespace({_2.Length}) ");
-                return;
-            }
+			var _1 = _reader.Read(Symbol);
+			if (_1 != null)
+			{
+				Console.WriteLine($"symbol({_1}) ");
+				return;
+			}
 
-            var _3 = _reader.ReadIdent();
-            if (_3 != null)
-            {
-                Console.WriteLine($"ident({_3}) ");
-                return;
-<<<<<<< HEAD
->>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
-=======
->>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
-            }
-        }
-    }
+			var _2 = _reader.ReadRepeat(Whitespace);
+			if (_2.Length != 0)
+			{
+				Console.WriteLine($"whitespace({_2.Length}) ");
+				return;
+			}
+
+			var _3 = _reader.ReadIdent();
+			if (_3 != null)
+			{
+				Console.WriteLine($"ident({_3}) ");
+				return;
+			}
+		}
+	}
 }
