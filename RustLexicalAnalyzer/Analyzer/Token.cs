@@ -119,7 +119,7 @@ namespace RustLexicalAnalyzer.Analyzer
 			[DisplayName("=>")] RIGHT_FAT_ARROW,
 			[DisplayName("=")] EQ,
 			[DisplayName("!=")] NOTEQ,
-			[DisplayName("!")] EXCLAMATIN_MARK,
+			[DisplayName("!")] EXCLAMATION_MARK,
 			[DisplayName("<=")] LEQ,
 			[DisplayName(">=")] GEQ,
 			[DisplayName("<<")] SHL,
@@ -138,9 +138,9 @@ namespace RustLexicalAnalyzer.Analyzer
 			[DisplayName("->")] RIGHT_ARROW,
 			[DisplayName("-")] MINUS,
 			[DisplayName("-=")] MINUSEQ,
-			[DisplayName("&&")] ANDAND,
-			[DisplayName("&")] AND,
-			[DisplayName("&=")] ANDEQ,
+			[DisplayName("&&")] AMPAMP,
+			[DisplayName("&")] AMP,
+			[DisplayName("&=")] AMPEQ,
 			[DisplayName("||")] OROR,
 			[DisplayName("|")] OR,
 			[DisplayName("|=")] OREQ,
@@ -186,9 +186,10 @@ namespace RustLexicalAnalyzer.Analyzer
 
 		public override string ToString()
 		{
-			string res = $"Type: {Type}, Line: {ReferRefToSource.LineNumb}, Pos: {ReferRefToSource.PosNumb}";
+			string pos = $"[{ReferRefToSource.LineNumb,2}:{ReferRefToSource.PosNumb,-2}]";
+			string res = $"{Type,-20}{pos}";
 			if (Type == Types.NONE || Type == Types.IDENT)
-				res += $", String: {StringToken}";
+				res += $"\tString: {StringToken}";
 			return res;
 		}
 	}

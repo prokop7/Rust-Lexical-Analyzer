@@ -7,26 +7,26 @@ using System.Linq;
 
 namespace RustLexicalAnalyzer
 {
-	class Program
+	static class Program
 	{
 		private static void Main(string[] args)
 		{
 			Console.OutputEncoding = Encoding.UTF8;
 			Case2("hello.rs");
-			Case("fn main() {}");
+//			Case("fn    main() {}");
 		}
 
 		static void Case2(string fileName)
 		{
 			var hello = File.Open(fileName, FileMode.Open);
-			LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(hello);
-			for (int i = 0; i < 100; i++)
-			{
-				foreach (var token in lexicalAnalyzer.GetNextTokens())
-				{
-					Console.WriteLine(token);
-				}
-			}
+			var lexicalAnalyzer = new LexicalAnalyzer(hello);
+			while(!lexicalAnalyzer.IsEnded)
+				Console.WriteLine(lexicalAnalyzer.GetNextToken());
+			hello.Close();
+			hello = File.Open(fileName, FileMode.Open);
+			lexicalAnalyzer = new LexicalAnalyzer(hello);
+			var tokens = lexicalAnalyzer.GetTokens(200);
+			Console.WriteLine(tokens.Length);
 		}
 
 		static void Case(string code)
