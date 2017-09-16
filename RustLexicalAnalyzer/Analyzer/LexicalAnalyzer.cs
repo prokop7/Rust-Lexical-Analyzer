@@ -37,6 +37,8 @@ namespace RustLexicalAnalyzer.Analyzer
 
         public Token[] GetNextTokens(int amount = 1)
         {
+            if (streamReader.EndOfStream)
+                return new Token[0];
             var startOffset = offset;
             var startLine = line;
             var tokens = new List<Token>();
@@ -46,9 +48,10 @@ namespace RustLexicalAnalyzer.Analyzer
 
             // 0 - ident
             // 1 - none
-            var flags = new bool[2];
+            // 2 - keyword
+            var flags = new bool[3];
 
-            while (!flags[1])
+            while (true)
             {
                 var c = GetNext()[0];
                 offset++;
@@ -63,8 +66,15 @@ namespace RustLexicalAnalyzer.Analyzer
                     sBuffer = sBuffer.Substring(0, sBuffer.Length - 1);
                     break;
                 }
-
-                if (flags[1])
+                if (flags[1] && Token.GetType(sBuffer) != NONE)
+                    flags[2] = true;
+                if (flags[2] && Token.GetType(sBuffer) == NONE)
+                {
+                    buffer.Add(c);
+                    sBuffer = sBuffer.Substring(0, sBuffer.Length - 1);
+                    break;
+                }
+                if (flags[1] && !flags[2])
                     break;
             }
             var type = Token.GetType(sBuffer);

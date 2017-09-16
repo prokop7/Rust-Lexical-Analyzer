@@ -1,4 +1,1 @@
-aф
-fn main() {
-    println!("Hello World!");
-}
+aas>=d;

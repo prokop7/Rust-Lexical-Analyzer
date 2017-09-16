@@ -180,13 +180,16 @@ namespace RustLexicalAnalyzer.Analyzer
 		{
 			ReferRefToSource = referRefToSource;
 			Type = type;
-			StringToken = type == Types.IDENT ? stringToken : type.ToString();
+			StringToken = type == Types.IDENT || type == Types.NONE ? stringToken : type.ToString();
 		}
 
 
 		public override string ToString()
 		{
-			return $"Type: {Type}, Line: {ReferRefToSource.LineNumb}, Pos: {ReferRefToSource.PosNumb}";
+			string res = $"Type: {Type}, Line: {ReferRefToSource.LineNumb}, Pos: {ReferRefToSource.PosNumb}";
+			if (Type == Types.NONE || Type == Types.IDENT)
+				res += $", String: {StringToken}";
+			return res;
 		}
 	}
 }
