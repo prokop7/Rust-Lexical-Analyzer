@@ -1,9 +1,14 @@
 ﻿using System;
 <<<<<<< HEAD
+<<<<<<< HEAD
 using System.IO;
 using System.Text;
 using RustLexicalAnalyzer.Analyzer;
 using static RustLexicalAnalyzer.Analyzer.Token.Types;
+=======
+using System.Collections.Generic;
+using System.Linq;
+>>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
 =======
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +20,7 @@ namespace RustLexicalAnalyzer
     {
         private static void Main(string[] args)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             Console.OutputEncoding = Encoding.UTF8;
             var t1 = new Token((1, 2), ANDAND, string.Empty);
@@ -29,6 +35,8 @@ namespace RustLexicalAnalyzer
                     Console.WriteLine(token);
                 }
 =======
+=======
+>>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
             Case("fn main() {}");
         }
 
@@ -184,6 +192,9 @@ namespace RustLexicalAnalyzer
             {
                 Console.WriteLine($"ident({_3}) ");
                 return;
+<<<<<<< HEAD
+>>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
+=======
 >>>>>>> 99befce7fdf8978075888e8027a21452f32a92b7
             }
         }
