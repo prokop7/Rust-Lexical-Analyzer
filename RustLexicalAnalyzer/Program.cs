@@ -13,7 +13,17 @@ namespace RustLexicalAnalyzer
 		{
 			Console.OutputEncoding = Encoding.UTF8;
 			Case2("hello.rs");
+			Case3("hello.rs");
 //			Case("fn    main() {}");
+		}
+
+		private static void Case3(string fileName)
+		{
+			
+			var hello = File.Open(fileName, FileMode.Open);
+			var lexicalAnalyzer = new LexicalAnalyzer(hello);
+			var tokens = lexicalAnalyzer.GetTokens(200);
+			Console.WriteLine(tokens.Length);
 		}
 
 		static void Case2(string fileName)
@@ -23,10 +33,6 @@ namespace RustLexicalAnalyzer
 			while(!lexicalAnalyzer.IsEnded)
 				Console.WriteLine(lexicalAnalyzer.GetNextToken());
 			hello.Close();
-			hello = File.Open(fileName, FileMode.Open);
-			lexicalAnalyzer = new LexicalAnalyzer(hello);
-			var tokens = lexicalAnalyzer.GetTokens(200);
-			Console.WriteLine(tokens.Length);
 		}
 
 		static void Case(string code)

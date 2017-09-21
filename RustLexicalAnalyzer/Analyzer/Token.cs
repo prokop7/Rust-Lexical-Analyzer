@@ -6,6 +6,9 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace RustLexicalAnalyzer.Analyzer
 {
+	/// <summary>
+	/// Extender for DisplayName property.
+	/// </summary>
 	public static class EnumExtensions
 	{
 		public static string GetDisplayName(this Enum enumValue)
@@ -20,9 +23,40 @@ namespace RustLexicalAnalyzer.Analyzer
 	
 	public class Token
 	{
-		public RefToSource ReferRefToSource { get; }
+		/// <summary>
+		/// String token for Identifiers.
+		/// </summary>
 		public string StringToken { get; }
+		
+		
+		/// <summary>
+		/// Position of the token.
+		/// </summary>
+		public RefToSource ReferRefToSource { get; }
+		
+		public struct RefToSource
+		{
+			public readonly int LineNumb;
+			public readonly int PosNumb;
 
+			public static implicit operator (int, int)(RefToSource RefToSource) 
+				=> (RefToSource.LineNumb, RefToSource.PosNumb);
+
+			public static implicit operator RefToSource((int LineNumb, int PosNumb) RefToSource) 
+				=> new RefToSource(RefToSource.LineNumb, RefToSource.PosNumb);
+
+			public RefToSource(int lineNumb, int posNumb)
+			{
+				PosNumb = posNumb;
+				LineNumb = lineNumb;
+			}
+		}
+
+		/// <summary>
+		/// Convert a string to Type of token.
+		/// </summary>
+		/// <param name="s">input string</param>
+		/// <returns>Type of token which satisfied to string.</returns>
 		public static Types GetType(string s)
 		{
 			foreach (Types type in Enum.GetValues(typeof(Types)))
@@ -33,6 +67,10 @@ namespace RustLexicalAnalyzer.Analyzer
 			return Types.NONE;
 		}
 		
+		/// <summary>
+		/// All types of tokens.
+		/// If none of them was matched then it's NONE.
+		/// </summary>
 		public enum Types
 		{
 			[DisplayName("")] IDENT,
@@ -156,24 +194,6 @@ namespace RustLexicalAnalyzer.Analyzer
 			[DisplayName("%=")] PERCENTEQ,
 		}
 
-		public struct RefToSource
-		{
-			public readonly int LineNumb;
-			public readonly int PosNumb;
-
-			public static implicit operator (int, int)(RefToSource RefToSource) 
-				=> (RefToSource.LineNumb, RefToSource.PosNumb);
-
-			public static implicit operator RefToSource((int LineNumb, int PosNumb) RefToSource) 
-				=> new RefToSource(RefToSource.LineNumb, RefToSource.PosNumb);
-
-			public RefToSource(int lineNumb, int posNumb)
-			{
-				PosNumb = posNumb;
-				LineNumb = lineNumb;
-			}
-		}
-
 		public Types Type { get; }
 
 		public Token(RefToSource referRefToSource, Types type, string stringToken = "")
@@ -186,8 +206,8 @@ namespace RustLexicalAnalyzer.Analyzer
 
 		public override string ToString()
 		{
-			string pos = $"[{ReferRefToSource.LineNumb,2}:{ReferRefToSource.PosNumb,-2}]";
-			string res = $"{Type,-20}{pos}";
+			var pos = $"[{ReferRefToSource.LineNumb,2}:{ReferRefToSource.PosNumb,-2}]";
+			var res = $"{Type,-20}{pos}";
 			if (Type == Types.NONE || Type == Types.IDENT)
 				res += $"\tString: {StringToken}";
 			return res;
