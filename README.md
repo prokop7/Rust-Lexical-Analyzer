@@ -1,5 +1,5 @@
 # Rust Lexical Analyzer
-Used .NET Core 2.0
+.NET Core 2.0 was used.
 
 Run by 
 ```
