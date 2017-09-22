@@ -1,4 +1,4 @@
-pub fn validate(text: &str) {
+pub fn fn_validate(text: &str) {
 	let mut out = io::stdout();
 	let x: f64 = text.parse().unwrap();
 	let f64_bytes: u64 = unsafe { transmute(x) };
